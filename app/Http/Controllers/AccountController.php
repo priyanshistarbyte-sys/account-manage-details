@@ -43,8 +43,17 @@ class AccountController extends Controller
                 ->addColumn('icon', function ($account) {
                     $imagePath = $account->icon 
                         ? asset('storage/' . ltrim($account->icon, '/')) 
-                        : asset('assets/images/defaultApp.png');
+                        : asset('assets/images/default.jpg');
                     return '<img src="'.$imagePath.'" alt="Icon" class="dataTable-app-img rounded" width="40" height="40">';
+                })
+                 ->addColumn('password', function ($account) {
+                    $viewUrl = route('account.view-password', $account->id);
+                    return '<span class="password-mask">••••••••</span>
+                            <a href="#" class="btn btn-sm ms-2" 
+                            data-ajax-popup="true" data-size="md"
+                            data-title="View Password" data-url="'.$viewUrl.'">
+                                <i class="fa fa-eye"></i>
+                            </a>';
                 })
                 ->addColumn('actions', function ($account) {
                      $buttons = '';
@@ -68,7 +77,7 @@ class AccountController extends Controller
                        
                     return $buttons;
                 })
-                ->rawColumns(['icon','actions'])
+                ->rawColumns(['icon','password','actions'])
                 ->make(true);
         }
         return view('account.index');
@@ -103,8 +112,16 @@ class AccountController extends Controller
             $messages = $validator->getMessageBag();
             return redirect()->back()->with('error', $messages->first());
         }
-        $path_icon = $request->file('icon')->store('uploads/images/icon', 'public');
-        $path_banner = $request->file('banner')->store('uploads/images/banner', 'public');
+        $path_icon = null;
+        if ($request->hasFile('icon')) {
+            $path_icon = $request->file('icon')->store('uploads/images/icon', 'public');
+        }
+
+        $path_banner = null;
+        if ($request->hasFile('banner')) {
+            $path_banner = $request->file('banner')->store('uploads/images/banner', 'public');
+        }
+     
 
         $account = new Account();
         $account->name = $request->name;
@@ -115,8 +132,8 @@ class AccountController extends Controller
         $account->authenticator_code = $request->authenticator_code;
         $account->location = $request->location;
         $account->created_by = Auth::user()->id;
-        $account->icon = $path_icon ?? '';
-        $account->banner = $path_banner ?? '';
+        $account->icon = $path_icon;
+        $account->banner = $path_banner;
         $account->save();
 
         return redirect()->route('account.index')->with('success', 'Account created successfully.');
@@ -191,5 +208,10 @@ class AccountController extends Controller
     {
         $account->delete();
         return redirect()->route('account.index')->with('success', 'Account deleted successfully.');
+    }
+
+    public function viewPassword(Account $account)
+    {
+        return view('account.view-password', compact('account'));
     }
 }

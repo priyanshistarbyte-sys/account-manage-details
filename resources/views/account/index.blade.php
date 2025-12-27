@@ -27,6 +27,7 @@
                         <th>Icon</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Password</th>
                         <th>Mobile No</th>
                         <th>Actions</th>
                     </tr>
@@ -70,6 +71,7 @@
                 { data: 'icon', name: 'icon', orderable: false, searchable: false },
                 { data: 'name', name: 'name'},
                 { data: 'email', name: 'email' },
+                { data: 'password', name: 'password' },
                 { data: 'register_mobile_no', name: 'register_mobile_no'},
                 { data: 'actions', name: 'actions', orderable: false, searchable: false },
             ]

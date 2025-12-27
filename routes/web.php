@@ -15,6 +15,8 @@ Route::get('users/{id}/login-with-account-details', [AccountController::class, '
 Route::middleware(['auth', 'verified'])->group(function () {
    
     Route::resource('account', AccountController::class);
+    Route::get('account/{account}/view-password', [AccountController::class, 'viewPassword'])->name('account.view-password');
+
 
 });
 
